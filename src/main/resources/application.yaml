@@ -1,0 +1,26 @@
+#spring.application.name=medical-facilities
+
+server:
+  port: 8080
+  servlet:
+    context-path: "/medical-facilities"
+
+spring:
+  application:
+    name: medical-facilities
+  datasource:
+    url: 'jdbc:mysql://localhost:3306/medical-facilities'
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+  signer-key: "7Cfgo+KtHmcDVFMYRkJeI8hE+ZtJG+u8VGI5Gh+QE5krK5qqPziGQ1m+PK/3lGLS"
+
+time:
+  expiry:
+    access-token: 3600
+    refresh-token: 36000
