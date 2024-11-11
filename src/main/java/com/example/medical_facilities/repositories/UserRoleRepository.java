@@ -1,5 +1,6 @@
 package com.example.medical_facilities.repositories;
 
+import com.example.medical_facilities.entities.RoleEntity;
 import com.example.medical_facilities.entities.UserRoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -33,6 +34,13 @@ public interface UserRoleRepository extends JpaRepository<UserRoleEntity, Long> 
             WHERE ur.userId = :userId
             """)
     List<String> findRoleNamesByUserId(@Param("userId") String userId);
+
+    @Query("""
+            SELECT r.name
+            FROM RoleEntity r JOIN UserRoleEntity ur ON r.id = ur.roleId
+            WHERE ur.userId = :userId
+            """)
+    List<RoleEntity> findRoleByUserId(@Param("userId") String userId);
 
     @Modifying
     @Transactional

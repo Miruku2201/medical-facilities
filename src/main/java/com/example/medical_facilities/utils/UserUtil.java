@@ -15,6 +15,7 @@ import com.example.medical_facilities.repositories.UserCredentialRepository;
 import com.example.medical_facilities.repositories.UserRepository;
 import com.example.medical_facilities.repositories.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -32,11 +33,11 @@ public class UserUtil {
     private UserRoleRepository userRoleRepository;
     @Autowired
     private UserCredentialRepository userCredentialRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
 
     public UserResponse createUserWithRole(UserCreationRequest request, String roleName){
         // Check username is existed
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (userCredentialRepository.existsByUsername(request.getUsername())){
             throw new AppException(UserErrorCode.EXISTENT_USERNAME);
         }

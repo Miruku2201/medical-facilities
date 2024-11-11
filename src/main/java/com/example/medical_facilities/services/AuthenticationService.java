@@ -45,39 +45,12 @@ public class AuthenticationService {
     private UserRepository userRepository;
     @Autowired
     private UserRoleRepository userRoleRepository;
+    @Autowired
+    private JwtService jwtService;
 
     private List<String> buildRole(String userId){
         List<String> listRoleNames = userRoleRepository.findRoleNamesByUserId(userId);
         return listRoleNames.stream().map(role -> "ROLE_"+role).toList();
-    }
-
-    private String generateToken(@NotNull UserEntity user, Long expiry){
-        // JWT include 3 parts:
-        // 1. HEADER: encode alg, token type (JWT)
-        // 2. PAYLOAD: info claim
-        // 3. SIGNATURE: (header + payload) + signer
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
-
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getId())
-                .issuer("http://miruku.com")
-                .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(expiry, ChronoUnit.SECONDS).toEpochMilli()))
-                .jwtID(UUID.randomUUID().toString())
-                .claim("role", buildRole(user.getId()))
-                .build();
-
-        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
-
-        JWSObject jwsObject = new JWSObject(header, payload);
-
-        try{
-            jwsObject.sign(new MACSigner(signerKey.getBytes()));
-            return jwsObject.serialize(); //String token
-        } catch (JOSEException e) {
-            log.error("Cannot create token", e);
-            throw new RuntimeException(e);
-        }
     }
 
     public AuthenticationResponse login (UserLoginRequest request){
@@ -93,10 +66,9 @@ public class AuthenticationService {
 
         // Generate Token for user login
         UserEntity user = userRepository.findById(userCredential.getUserId()).orElseThrow(() -> new AppException(UserErrorCode.NONEXISTENT_USER));
-        String accessToken = generateToken(user, 3600L);
 
         return AuthenticationResponse.builder()
-                .accessToken(accessToken)
+                .accessToken(jwtService.getAccessToken(user))
                 .build();
     }
 }
