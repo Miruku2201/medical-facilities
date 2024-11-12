@@ -80,7 +80,7 @@ public class JwtService {
 
         try{
             jwsObject.sign(new MACSigner(signerKey.getBytes()));
-            return jwsObject.serialize(); //String token
+            return jwsObject.serialize();  //String token
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
