@@ -1,4 +1,7 @@
 package com.example.medical_facilities.entities;
 
-public class MedicalEntity {
+import jakarta.persistence.Entity;
+
+@Entity
+public class MedicalEntity extends BaseUUIDEntity{
 }
